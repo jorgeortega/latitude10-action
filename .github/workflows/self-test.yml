@@ -1,0 +1,16 @@
+name: Self-test
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  no-key:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          spec: test/fixtures/petstore.yaml
+          min-score: 40
