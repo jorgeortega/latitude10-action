@@ -1,0 +1,22 @@
+openapi: 3.0.3
+info:
+  title: Multi-file
+  version: 1.0.0
+paths:
+  /pets/{id}:
+    get:
+      operationId: getPet
+      summary: Get a pet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The pet
+          content:
+            application/json:
+              schema:
+                $ref: "./schemas/pet.yaml"
