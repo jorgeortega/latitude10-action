@@ -3,6 +3,8 @@ import { baseWithoutKey } from './base.ts';
 import { type Json, bundleSpec } from './bundle.ts';
 import { gate } from './gate.ts';
 import { type Io, defaultIo } from './io.ts';
+import { applyToSource } from './patch.ts';
+import { openFixesPullRequest } from './pull-request.ts';
 import { fixableOperations, scoreSpec } from './score.ts';
 import { RegistryError, registryClient } from './registry.ts';
 import { type Change, diff, summarize } from './shared/diff.ts';
@@ -124,7 +126,35 @@ export async function run(io: Io): Promise<void> {
     }
 
     const fixable = fixableOperations(result.findings);
-    if (fixable) lines.push('', `${plural(fixable, 'operation')} have a suggested fix with a Latitude 10 project key on a paid plan.`.replace(/^1 operation have/, '1 operation has'));
+    const haveFix = (n: number) => (n === 1 ? '1 operation has' : `${n} operations have`);
+    if (registry && inputs.suggestFixes && fixable) {
+      const fixes = await registry.fixes(bundled.multiFile ? bundled.text : bundled.source, bundled.format);
+      if (fixes.status !== 200) {
+        if (fixes.status === 403) lines.push('', `${haveFix(fixable)} a suggested fix on paid plans.`);
+        else core.notice(fixes.error);
+      } else if (bundled.multiFile) lines.push('', `${haveFix(fixes.operations)} a suggested fix. The spec spans several files, so no pull request was opened.`);
+      else if (fixes.patch.length) {
+        const token = core.getInput('github-token') || env.GITHUB_TOKEN || '';
+        const [owner, repo] = (env.GITHUB_REPOSITORY ?? '').split('/');
+        const base = env.GITHUB_HEAD_REF || env.GITHUB_REF_NAME || '';
+        if (!token || !io.octokit || !owner || !repo || !base) {
+          core.notice('Suggested fixes need the workflow token with contents: write and pull-requests: write.');
+        } else {
+          const pr = await openFixesPullRequest({
+            octokit: io.octokit(token),
+            owner,
+            repo,
+            base,
+            path: inputs.spec.replace(/^\.\//, ''),
+            content: applyToSource(bundled.source, bundled.format, fixes.patch),
+            summary: `Score ${fixes.scoreBefore} → ${fixes.scoreAfter}, ${plural(fixes.operations, 'operation')} improved.`,
+          });
+          lines.push('', `Suggested fixes: [pull request](${pr.url}) (score ${fixes.scoreBefore} → ${fixes.scoreAfter}).`);
+        }
+      }
+    } else if (fixable) {
+      lines.push('', `${haveFix(fixable)} a suggested fix with a Latitude 10 project key on a paid plan.`);
+    }
     lines.push('', reasons.length ? `**Failed:** ${reasons.join('; ')}` : '**Passed.**');
     core.summary.addRaw(lines.join('\n'), true);
     await core.summary.write();

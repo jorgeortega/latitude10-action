@@ -32,6 +32,10 @@ inputs:
     description: The version's label in the registry. Empty uses info.version.
     required: false
     default: ''
+  github-token:
+    description: Token for the suggested-fixes pull request (needs contents write and pull-requests write).
+    required: false
+    default: ${{ github.token }}
   api-url:
     description: The Latitude 10 API.
     required: false

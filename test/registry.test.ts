@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { RegistryError, registryClient } from '../src/registry.ts';
 import { VERSION } from '../src/version.ts';
 import { run } from '../src/main.ts';
+import { bundleSpec } from '../src/bundle.ts';
+import { fixableOperations, scoreSpec } from '../src/score.ts';
 import { fakeIo } from './helpers.ts';
 
 const spec = new URL('./fixtures/petstore.yaml', import.meta.url).pathname;
@@ -129,5 +131,46 @@ describe('main, with a key', () => {
     expect(requests).toEqual([]);
     expect(calls.failed).toEqual([]);
     expect(calls.notices).toHaveLength(1);
+  });
+});
+
+describe('main, suggested fixes', () => {
+  const env = { LATITUDE10_KEY: KEY, GITHUB_TOKEN: 'ghs_token', GITHUB_REF_NAME: 'main' };
+  const fixes = JSON.parse(readFileSync(new URL('./fixtures/petstore.fixes.json', import.meta.url), 'utf8'));
+
+  it('says how many operations have a fix on Free, with no price', async () => {
+    const { fetcher } = stubFetch({
+      [`GET ${API}/api/registry/v1/versions/latest`]: () => Response.json({ error: 'none' }, { status: 404 }),
+      [`POST ${API}/api/registry/v1/fixes`]: () => Response.json({ error: 'Suggested fixes are part of the paid plans.' }, { status: 403 }),
+    });
+    const { io, calls } = fakeIo({ spec, 'max-tools': '40', 'suggest-fixes': 'true' }, env, { fetch: fetcher, octokit: () => { throw new Error('no octokit on Free'); } });
+    await run(io);
+    expect(calls.failed).toEqual([]);
+    const { doc } = await bundleSpec(spec);
+    const n = fixableOperations(scoreSpec(doc).findings);
+    expect(n).toBeGreaterThan(1);
+    expect(calls.summary).toContain(`${n} operations have a suggested fix on paid plans.`);
+    expect(calls.summary).not.toMatch(/\$\d/);
+  });
+
+  it('opens the pull request with the fixed file on a paid plan', async () => {
+    const { fetcher } = stubFetch({
+      [`GET ${API}/api/registry/v1/versions/latest`]: () => Response.json({ error: 'none' }, { status: 404 }),
+      [`POST ${API}/api/registry/v1/fixes`]: () => Response.json({ rulesVersion: '1.0.3', operations: 3, ...fixes }),
+    });
+    let committed = '';
+    const octokit = {
+      rest: {
+        git: { getRef: async () => ({ data: { object: { sha: 's' } } }), createRef: async () => ({}), updateRef: async () => ({}) },
+        repos: { getContent: async () => ({ data: { sha: 'f' } }), createOrUpdateFileContents: async ({ content }: { content: string }) => void (committed = Buffer.from(content, 'base64').toString('utf8')) },
+        pulls: { list: async () => ({ data: [] }), create: async () => ({ data: { html_url: 'https://github.com/acme/api/pull/9' } }), update: async () => ({}) },
+      },
+    };
+    const { io, calls } = fakeIo({ spec, 'max-tools': '40', 'suggest-fixes': 'true' }, env, { fetch: fetcher, octokit: () => octokit as never });
+    await run(io);
+    expect(calls.failed).toEqual([]);
+    expect(committed).toContain('# Paged with limit; no cursor yet.');
+    expect(committed).toContain('How many results to return in one page.');
+    expect(calls.summary).toContain('https://github.com/acme/api/pull/9');
   });
 });
