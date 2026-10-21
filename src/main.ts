@@ -4,7 +4,9 @@ import { type Json, bundleSpec } from './bundle.ts';
 import { gate } from './gate.ts';
 import { type Io, defaultIo } from './io.ts';
 import { fixableOperations, scoreSpec } from './score.ts';
+import { RegistryError, registryClient } from './registry.ts';
 import { type Change, diff, summarize } from './shared/diff.ts';
+import { parse } from 'yaml';
 
 // The readiness gate: bundle, score, annotate, diff against a base, gate,
 // and with LATITUDE10_KEY push the version and suggest fixes. With no key,
@@ -56,11 +58,26 @@ export async function run(io: Io): Promise<void> {
     const result = scoreSpec(bundled.doc);
     const overflow = annotate(inputs.spec, bundled.source, result.findings, core);
 
-    // The base: the spec on the pull request's base branch.
+    // A pull request from a fork never gets the key, a push or a fixes PR.
+    const headRepo = io.event.pull_request?.head?.repo?.full_name;
+    const fork = !!headRepo && headRepo !== env.GITHUB_REPOSITORY;
+    const key = fork ? '' : (env.LATITUDE10_KEY ?? '').trim();
+    if (fork && (inputs.push || inputs.suggestFixes || env.LATITUDE10_KEY)) core.notice('This pull request comes from a fork: the registry, push and suggested fixes are skipped.');
+    const registry = key ? registryClient(inputs.apiUrl, key, io.fetch) : null;
+
+    // The base: with a key, the registry's latest version; else (or when the
+    // registry has none) the spec on the pull request's base branch.
     let base: Json | null = null;
     let baseName = '';
+    if (registry) {
+      const latest = await registry.latest();
+      if (latest) {
+        base = parse(await registry.source(latest.seq)) as Json;
+        baseName = `registry version #${latest.seq}`;
+      }
+    }
     const baseRef = env.GITHUB_BASE_REF;
-    if (baseRef && !bundled.multiFile) {
+    if (!base && baseRef && !bundled.multiFile) {
       base = await baseWithoutKey(io.git, inputs.spec, baseRef);
       baseName = `${baseRef} branch`;
     }
@@ -89,6 +106,23 @@ export async function run(io: Io): Promise<void> {
     ];
     if (overflow) lines.push('', `${plural(overflow, 'more finding')} not annotated.`);
     for (const change of changes.filter((c) => c.level === 'breaking')) lines.push(`- **Breaking:** ${change.message} (\`${change.pointer}\`)`);
+    // With a key and push, upload the version, only when the gate passed.
+    if (registry && inputs.push && !reasons.length) {
+      try {
+        const pushed = await registry.push(bundled.multiFile ? bundled.text : bundled.source, {
+          label: inputs.label || String(bundled.doc.info?.version ?? ''),
+          gitSha: env.GITHUB_SHA ?? '',
+          gitRef: env.GITHUB_REF ?? '',
+          format: bundled.format,
+        });
+        core.setOutput('version-url', pushed.url);
+        lines.push('', pushed.status === 201 ? `Pushed as [version #${pushed.seq}](${pushed.url}).` : `Same as [version #${pushed.seq}](${pushed.url}); nothing new pushed.`);
+      } catch (error) {
+        if (error instanceof RegistryError && error.status === 429) core.notice(error.message);
+        else throw error;
+      }
+    }
+
     const fixable = fixableOperations(result.findings);
     if (fixable) lines.push('', `${plural(fixable, 'operation')} have a suggested fix with a Latitude 10 project key on a paid plan.`.replace(/^1 operation have/, '1 operation has'));
     lines.push('', reasons.length ? `**Failed:** ${reasons.join('; ')}` : '**Passed.**');
