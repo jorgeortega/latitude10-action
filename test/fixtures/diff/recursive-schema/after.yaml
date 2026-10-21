@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: Pets
+  version: 1.0.0
+components:
+  schemas:
+    Node:
+      type: object
+      properties:
+        name:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/Node"
+        meta:
+          type: object
+          properties:
+            a:
+              type: string
+paths:
+  /nodes:
+    get:
+      operationId: listNodes
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"

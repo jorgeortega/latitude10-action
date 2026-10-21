@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "operation-deprecated",
+    "level": "warning",
+    "pointer": "/paths/~1pets/get/deprecated",
+    "message": "GET /pets is now deprecated"
+  }
+]

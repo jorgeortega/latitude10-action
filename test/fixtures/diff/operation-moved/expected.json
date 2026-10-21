@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "operation-moved",
+    "level": "breaking",
+    "pointer": "/paths/~1animals/get",
+    "message": "GET /pets moved to GET /animals (operationId listPets)"
+  }
+]

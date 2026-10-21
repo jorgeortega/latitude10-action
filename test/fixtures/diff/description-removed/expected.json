@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "description-removed",
+    "level": "warning",
+    "pointer": "/paths/~1pets/get/description",
+    "message": "The description of GET /pets was removed"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "operation-added",
+    "level": "info",
+    "pointer": "/paths/~1pets/post",
+    "message": "POST /pets was added"
+  }
+]

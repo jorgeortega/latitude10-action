@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "response-property-type-changed",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/get/responses/200/content/application~1json/schema/properties/id",
+    "message": "The type of id in the 200 response of GET /pets changed from string to integer"
+  }
+]

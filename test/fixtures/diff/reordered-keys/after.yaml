@@ -1,0 +1,53 @@
+paths:
+  /pets:
+    get:
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: limit
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                  id:
+                    type: string
+                type: object
+          description: OK
+      operationId: listPets
+    post:
+      responses:
+        "201":
+          description: Created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+              type: object
+        required: true
+      operationId: createPet
+  /pets/{id}:
+    get:
+      responses:
+        "200":
+          description: OK
+      parameters:
+        - schema:
+            type: string
+          required: true
+          in: path
+          name: id
+      operationId: getPet
+servers:
+  - url: https://api.example.com
+info:
+  version: 1.0.0
+  title: Pets
+openapi: 3.0.3

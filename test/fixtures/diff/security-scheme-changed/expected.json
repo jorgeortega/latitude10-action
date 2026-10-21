@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "security-scheme-changed",
+    "level": "breaking",
+    "pointer": "/components/securitySchemes/apiKey",
+    "message": "Security scheme apiKey changed"
+  }
+]

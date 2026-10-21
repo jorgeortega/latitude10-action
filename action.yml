@@ -1,0 +1,50 @@
+name: Latitude 10 readiness gate
+description: Score an OpenAPI spec for AI agents, catch breaking changes, and keep versions in the Latitude 10 registry.
+author: October Moon LLC
+branding:
+  icon: check-circle
+  color: blue
+inputs:
+  spec:
+    description: Path to the OpenAPI document (YAML or JSON). Local $refs are bundled.
+    required: true
+  min-score:
+    description: Fail when the readiness score is below this (0-100). Empty reports only.
+    required: false
+    default: ''
+  max-tools:
+    description: Fail when the spec has more operations than this (each becomes an agent tool).
+    required: false
+    default: '40'
+  fail-on-breaking:
+    description: Fail when the spec has breaking changes against its base.
+    required: false
+    default: 'false'
+  push:
+    description: With LATITUDE10_KEY, upload this version to the registry.
+    required: false
+    default: 'false'
+  suggest-fixes:
+    description: With LATITUDE10_KEY on a paid plan, open or update one pull request with rules-only fixes.
+    required: false
+    default: 'false'
+  label:
+    description: The version's label in the registry. Empty uses info.version.
+    required: false
+    default: ''
+  api-url:
+    description: The Latitude 10 API.
+    required: false
+    default: https://latitude10.tech
+outputs:
+  score:
+    description: The readiness score, 0-100.
+  operations:
+    description: The number of operations.
+  breaking:
+    description: Breaking changes against the base.
+  version-url:
+    description: With push, the registry page of the version.
+runs:
+  using: node24
+  main: dist/index.js

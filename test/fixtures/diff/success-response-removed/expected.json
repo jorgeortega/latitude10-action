@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "success-response-removed",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/get/responses/206",
+    "message": "The 206 response of GET /pets was removed"
+  }
+]

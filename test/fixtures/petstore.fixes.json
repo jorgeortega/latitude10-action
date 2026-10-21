@@ -1,0 +1,113 @@
+{
+  "scoreBefore": 49,
+  "scoreAfter": 84,
+  "patch": [
+    {
+      "op": "add",
+      "path": "/paths/~1pets/get/parameters/0/description",
+      "value": "How many results to return in one page."
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets/get/description",
+      "value": "Lists pets, filtered and paged with limit. Use it to find pets before acting on one."
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets/get/x-agentify-examples",
+      "value": [
+        {
+          "description": "List pets",
+          "arguments": {
+            "limit": 10
+          }
+        }
+      ]
+    },
+    {
+      "op": "replace",
+      "path": "/paths/~1pets/post/operationId",
+      "value": "createPet"
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets/post/summary",
+      "value": "Create a pet"
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets/post/description",
+      "value": "Creates a pet from the fields in the body and returns it. It changes data: send an Idempotency-Key so a retry doesn't create two."
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets/post/parameters",
+      "value": [
+        {
+          "name": "Idempotency-Key",
+          "in": "header",
+          "required": false,
+          "description": "A unique key (e.g. a UUID) per logical request. Retries with the same key and body return the first response instead of repeating the write.",
+          "schema": {
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      ]
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets/post/x-agentify-examples",
+      "value": [
+        {
+          "description": "Create a pet",
+          "arguments": {
+            "body": {
+              "id": "item_123",
+              "name": "string"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets~1{id}/get/x-agentify-examples",
+      "value": [
+        {
+          "description": "Get a pet",
+          "arguments": {
+            "id": "pet_123"
+          }
+        }
+      ]
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets~1{id}/delete/parameters/0/description",
+      "value": "The pet's id, as returned by the list and create operations."
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets~1{id}/delete/summary",
+      "value": "Delete a pet"
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets~1{id}/delete/description",
+      "value": "Deletes the pet by its id. This can't be undone."
+    },
+    {
+      "op": "add",
+      "path": "/paths/~1pets~1{id}/delete/x-agentify-examples",
+      "value": [
+        {
+          "description": "Delete a pet",
+          "arguments": {
+            "id": "pet_123"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "request-body-became-required",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/post/requestBody",
+    "message": "The request body of POST /pets is now required"
+  }
+]

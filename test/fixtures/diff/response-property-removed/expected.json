@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "response-property-removed",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/get/responses/200/content/application~1json/schema/properties/name",
+    "message": "Property name was removed from the 200 response of GET /pets"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "security-requirement-added",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/get/security",
+    "message": "GET /pets now requires security scheme apiKey"
+  }
+]

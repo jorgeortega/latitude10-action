@@ -1,0 +1,14 @@
+openapi: 3.0.3
+info:
+  title: Pets
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+  - url: https://eu.api.example.com
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      responses:
+        "200":
+          description: OK

@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "server-url-removed",
+    "level": "breaking",
+    "pointer": "/servers/1",
+    "message": "Server https://eu.api.example.com was removed"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "response-property-removed",
+    "level": "breaking",
+    "pointer": "/components/schemas/Node/properties/meta/properties/b",
+    "message": "Property meta.b was removed from the 200 response of GET /nodes"
+  }
+]

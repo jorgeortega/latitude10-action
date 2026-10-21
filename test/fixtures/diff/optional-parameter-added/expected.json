@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "optional-parameter-added",
+    "level": "info",
+    "pointer": "/paths/~1pets/get/parameters/0",
+    "message": "GET /pets has a new optional parameter query:limit"
+  }
+]

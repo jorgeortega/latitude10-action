@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "operation-id-changed",
+    "level": "warning",
+    "pointer": "/paths/~1pets/get/operationId",
+    "message": "The operationId of GET /pets changed from listPets to getPets, so agents see a new tool name"
+  }
+]

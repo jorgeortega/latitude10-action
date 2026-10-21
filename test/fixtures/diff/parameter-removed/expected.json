@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "parameter-removed",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/get/parameters/0",
+    "message": "Parameter query:limit of GET /pets was removed"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "name": "latitude10-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Score an OpenAPI spec for AI agents, catch breaking changes and keep versions in the Latitude 10 registry, in your CI.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --platform=node --target=node24 --format=esm --outfile=dist/index.js --banner:js=\"import { createRequire } from 'module'; const require = createRequire(import.meta.url);\"",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "@apidevtools/json-schema-ref-parser": "^16.0.5",
+    "openapi-agent-check": "^1.0.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "operation-removed",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/post",
+    "message": "POST /pets was removed"
+  }
+]

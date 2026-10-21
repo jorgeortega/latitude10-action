@@ -1,0 +1,84 @@
+# The pet store, as a customer's CI would push it.
+openapi: 3.0.3
+info:
+  title: Pet Store
+  version: 1.4.0
+servers:
+  - url: https://api.example.com
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List pets
+      # Paged with limit; no cursor yet.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pet"
+    post:
+      operationId: post1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Pet"
+      responses:
+        "201":
+          description: Created
+  /pets/{id}:
+    get:
+      operationId: getPet
+      summary: Get a pet
+      description: Returns one pet by its id, with its status and tags.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The pet's id.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+        "404":
+          description: Not found
+    delete:
+      operationId: deletePet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+components:
+  schemas:
+    # Every pet has an id and a name.
+    Pet:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [available, sold]

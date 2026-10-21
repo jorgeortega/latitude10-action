@@ -1,0 +1,19 @@
+openapi: 3.0.3
+info:
+  title: Pets
+  version: 1.0.0
+paths:
+  /pets:
+    post:
+      operationId: createPet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: OK

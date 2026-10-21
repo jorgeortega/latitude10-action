@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: Pets
+  version: 1.0.0
+paths:
+  /pets/{id}:
+    get:
+      operationId: getPet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK

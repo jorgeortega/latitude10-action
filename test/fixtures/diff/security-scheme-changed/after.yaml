@@ -1,0 +1,19 @@
+openapi: 3.0.3
+info:
+  title: Pets
+  version: 1.0.0
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: query
+      name: api_key
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      responses:
+        "200":
+          description: OK
+      security:
+        - apiKey: []

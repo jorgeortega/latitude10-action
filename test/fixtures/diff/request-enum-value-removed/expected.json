@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "request-enum-value-removed",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/get/parameters/0/schema",
+    "message": "Enum value \"sold\" was removed from parameter query:status of GET /pets"
+  }
+]

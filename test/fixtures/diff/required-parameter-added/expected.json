@@ -1,0 +1,8 @@
+[
+  {
+    "kind": "required-parameter-added",
+    "level": "breaking",
+    "pointer": "/paths/~1pets/get/parameters/0",
+    "message": "GET /pets has a new required parameter header:x-tenant"
+  }
+]
