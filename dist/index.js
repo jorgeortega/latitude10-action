@@ -40959,7 +40959,7 @@ function registryClient(apiUrl, key, fetcher = fetch) {
       const response = await call("POST", "/fixes", { text: text2, type: format === "json" ? "application/json" : "application/yaml" });
       if (response.status === 403 || response.status === 429) {
         const data = await response.json().catch(() => ({}));
-        return { status: response.status, error: response.status === 429 ? `Latitude 10 quota reached; it resets at ${data.resetsAt ?? "the start of the next period"}.` : data.error ?? "Suggested fixes are part of the paid plans." };
+        return { status: response.status, error: response.status === 429 ? `Latitude 10 quota reached; it resets at ${data.resetsAt ?? "the start of the next period"}.` : data.error ?? "Latitude 10 refused the fixes for this workspace." };
       }
       if (!response.ok) return fail(response);
       return { status: 200, ...await response.json() };
@@ -41381,8 +41381,8 @@ async function run3(io) {
     if (registry && inputs.suggestFixes && fixable) {
       const fixes = await registry.fixes(bundled.multiFile ? bundled.text : bundled.source, bundled.format);
       if (fixes.status !== 200) {
-        if (fixes.status === 403) lines.push("", `${haveFix(fixable)} a suggested fix on paid plans.`);
-        else core.notice(fixes.error);
+        lines.push("", `${haveFix(fixable)} a suggested fix.`);
+        core.notice(fixes.error);
       } else if (bundled.multiFile) lines.push("", `${haveFix(fixes.operations)} a suggested fix. The spec spans several files, so no pull request was opened.`);
       else if (fixes.patch.length) {
         const token = core.getInput("github-token") || env.GITHUB_TOKEN || "";
@@ -41404,7 +41404,7 @@ async function run3(io) {
         }
       }
     } else if (fixable) {
-      lines.push("", `${haveFix(fixable)} a suggested fix with a Latitude 10 project key on a paid plan.`);
+      lines.push("", `${haveFix(fixable)} a suggested fix with a Latitude 10 project key, on any plan.`);
     }
     lines.push("", reasons.length ? `**Failed:** ${reasons.join("; ")}` : "**Passed.**");
     core.summary.addRaw(lines.join("\n"), true);

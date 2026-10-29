@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `suggest-fixes` works on every Latitude 10 plan, Free included (30 fix runs
+  a month on Free). When the registry refuses or the month's runs are used,
+  the summary says how many operations have a fix and a notice says why.
+
 ## 1.0.0 (2026-10-21)
 
 - Scores an OpenAPI spec for AI agents with openapi-agent-check 1.0.0

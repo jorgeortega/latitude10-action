@@ -25,7 +25,7 @@ inputs:
     required: false
     default: 'false'
   suggest-fixes:
-    description: With LATITUDE10_KEY on a paid plan, open or update one pull request with rules-only fixes.
+    description: With LATITUDE10_KEY, on any plan, open or update one pull request with rules-only fixes.
     required: false
     default: 'false'
   label:

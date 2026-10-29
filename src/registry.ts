@@ -61,7 +61,7 @@ export function registryClient(apiUrl: string, key: string, fetcher: typeof fetc
       const response = await call('POST', '/fixes', { text, type: format === 'json' ? 'application/json' : 'application/yaml' });
       if (response.status === 403 || response.status === 429) {
         const data = (await response.json().catch(() => ({}))) as { error?: string; resetsAt?: string };
-        return { status: response.status, error: response.status === 429 ? `Latitude 10 quota reached; it resets at ${data.resetsAt ?? 'the start of the next period'}.` : (data.error ?? 'Suggested fixes are part of the paid plans.') };
+        return { status: response.status, error: response.status === 429 ? `Latitude 10 quota reached; it resets at ${data.resetsAt ?? 'the start of the next period'}.` : (data.error ?? 'Latitude 10 refused the fixes for this workspace.') };
       }
       if (!response.ok) return fail(response);
       return { status: 200, ...((await response.json()) as Omit<Extract<Fixes, { status: 200 }>, 'status'>) };
