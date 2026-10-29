@@ -12,8 +12,8 @@ A GitHub Action that checks an OpenAPI spec before AI agents use it:
   version in the [Latitude 10](https://latitude10.tech) registry.
 - **Fails the job** when the score, the number of operations or breaking
   changes cross the limits you set.
-- With a project key: **keeps every version** in the registry, and on paid
-  plans **opens one pull request** with rules-only fixes.
+- With a project key: **keeps every version** in the registry, and on any
+  plan, Free included, **opens one pull request** with rules-only fixes.
 
 Without a key, nothing leaves the runner: no account, no request to
 Latitude 10.
@@ -54,7 +54,7 @@ jobs:
 | `max-tools` | `40` | Fail when the spec has more operations than this. Each operation becomes an agent tool. |
 | `fail-on-breaking` | `false` | Fail when there are breaking changes against the base. |
 | `push` | `false` | With `LATITUDE10_KEY`, upload this version to the registry (after the gate passes). |
-| `suggest-fixes` | `false` | With `LATITUDE10_KEY` on a paid plan, open or update one pull request, `latitude10/readiness-fixes`. |
+| `suggest-fixes` | `false` | With `LATITUDE10_KEY`, on any plan, open or update one pull request, `latitude10/readiness-fixes`. |
 | `label` | `info.version` | The version's label in the registry. |
 | `github-token` | `${{ github.token }}` | Used only by `suggest-fixes`. |
 | `api-url` | `https://latitude10.tech` | The Latitude 10 API. |
@@ -71,7 +71,7 @@ Outputs: `score`, `operations`, `breaking`, and with `push`, `version-url`.
 
 ## Suggested fixes
 
-`suggest-fixes: true` needs a key on a paid plan and these permissions:
+`suggest-fixes: true` needs a key (any plan, Free included) and these permissions:
 
 ```yaml
     permissions:
@@ -81,8 +81,9 @@ Outputs: `score`, `operations`, `breaking`, and with `push`, `version-url`.
 
 The fixes are rules-only (no model) and come as JSON Patch, applied to your
 file with its comments, key order and formatting kept. One branch and one
-pull request are reused on every run. On Free, the summary says how many
-operations have a fix. Pull requests from forks never get the key, a push or
+pull request are reused on every run. Free workspaces get 30 fix runs a
+month; when they're used up, the summary says how many operations have a
+fix. Pull requests from forks never get the key, a push or
 a fixes pull request.
 
 ## Privacy

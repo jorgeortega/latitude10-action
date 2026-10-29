@@ -130,8 +130,8 @@ export async function run(io: Io): Promise<void> {
     if (registry && inputs.suggestFixes && fixable) {
       const fixes = await registry.fixes(bundled.multiFile ? bundled.text : bundled.source, bundled.format);
       if (fixes.status !== 200) {
-        if (fixes.status === 403) lines.push('', `${haveFix(fixable)} a suggested fix on paid plans.`);
-        else core.notice(fixes.error);
+        lines.push('', `${haveFix(fixable)} a suggested fix.`);
+        core.notice(fixes.error);
       } else if (bundled.multiFile) lines.push('', `${haveFix(fixes.operations)} a suggested fix. The spec spans several files, so no pull request was opened.`);
       else if (fixes.patch.length) {
         const token = core.getInput('github-token') || env.GITHUB_TOKEN || '';
@@ -153,7 +153,7 @@ export async function run(io: Io): Promise<void> {
         }
       }
     } else if (fixable) {
-      lines.push('', `${haveFix(fixable)} a suggested fix with a Latitude 10 project key on a paid plan.`);
+      lines.push('', `${haveFix(fixable)} a suggested fix with a Latitude 10 project key, on any plan.`);
     }
     lines.push('', reasons.length ? `**Failed:** ${reasons.join('; ')}` : '**Passed.**');
     core.summary.addRaw(lines.join('\n'), true);

@@ -138,22 +138,23 @@ describe('main, suggested fixes', () => {
   const env = { LATITUDE10_KEY: KEY, GITHUB_TOKEN: 'ghs_token', GITHUB_REF_NAME: 'main' };
   const fixes = JSON.parse(readFileSync(new URL('./fixtures/petstore.fixes.json', import.meta.url), 'utf8'));
 
-  it('says how many operations have a fix on Free, with no price', async () => {
+  it('says how many operations have a fix when the registry refuses, with no price', async () => {
     const { fetcher } = stubFetch({
       [`GET ${API}/api/registry/v1/versions/latest`]: () => Response.json({ error: 'none' }, { status: 404 }),
-      [`POST ${API}/api/registry/v1/fixes`]: () => Response.json({ error: 'Suggested fixes are part of the paid plans.' }, { status: 403 }),
+      [`POST ${API}/api/registry/v1/fixes`]: () => Response.json({ error: 'Fixes are off for this workspace.' }, { status: 403 }),
     });
-    const { io, calls } = fakeIo({ spec, 'max-tools': '40', 'suggest-fixes': 'true' }, env, { fetch: fetcher, octokit: () => { throw new Error('no octokit on Free'); } });
+    const { io, calls } = fakeIo({ spec, 'max-tools': '40', 'suggest-fixes': 'true' }, env, { fetch: fetcher, octokit: () => { throw new Error('no octokit when refused'); } });
     await run(io);
     expect(calls.failed).toEqual([]);
     const { doc } = await bundleSpec(spec);
     const n = fixableOperations(scoreSpec(doc).findings);
     expect(n).toBeGreaterThan(1);
-    expect(calls.summary).toContain(`${n} operations have a suggested fix on paid plans.`);
+    expect(calls.summary).toContain(`${n} operations have a suggested fix.`);
+    expect(calls.notices).toContain('Fixes are off for this workspace.');
     expect(calls.summary).not.toMatch(/\$\d/);
   });
 
-  it('opens the pull request with the fixed file on a paid plan', async () => {
+  it('opens the pull request with the fixed file', async () => {
     const { fetcher } = stubFetch({
       [`GET ${API}/api/registry/v1/versions/latest`]: () => Response.json({ error: 'none' }, { status: 404 }),
       [`POST ${API}/api/registry/v1/fixes`]: () => Response.json({ rulesVersion: '1.0.3', operations: 3, ...fixes }),
