@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 (2026-10-29)
 
 - `suggest-fixes` works on every Latitude 10 plan, Free included (30 fix runs
   a month on Free). When the registry refuses or the month's runs are used,
